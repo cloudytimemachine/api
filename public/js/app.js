@@ -54,7 +54,20 @@ var ArchiveList = React.createClass({
     });
     return (
       <div className="archiveList">
+      <div className="table-responsive">
+      <table className="table">
+        <thead>
+        <tr>
+          <th>Taken</th>
+          <th>URL</th>
+          <th>Image</th>
+        </tr>
+        </thead>
+        <tbody>
         {archiveNodes}
+        </tbody>
+      </table>
+      </div>
       </div>
     );
   }
@@ -63,9 +76,11 @@ var ArchiveList = React.createClass({
 var Archive = React.createClass({
   render: function() {
     return(
-      <li className="archive">
-        <p>Url: {this.props.href} Time: {this.props.createdAt} <img src={'https://storage.googleapis.com/waybackmachine_default/' + this.props.filename} width="200px"/></p>
-      </li>
+      <tr className="archive">
+        <td>Time: {this.props.createdAt}</td>
+        <td>Url: {this.props.href}</td>
+        <td><img src={'https://storage.googleapis.com/waybackmachine_default/' + this.props.filename} width="200px" /></td>
+      </tr>
       );
   }
 });
