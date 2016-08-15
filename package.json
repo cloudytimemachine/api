@@ -10,7 +10,7 @@
   "author": "Ross Kukulinski <ross@kukulinski.com>",
   "license": "MIT",
   "dependencies": {
-    "async": "^2.0.0-rc.6",
+    "async": "^2.0.1",
     "body-parser": "^1.15.1",
     "bull": "^1.0.0-rc2",
     "dnscache": "0.0.4",
@@ -21,5 +21,8 @@
     "morgan": "^1.7.0",
     "pkginfo": "^0.4.0",
     "rethinkdb": "^2.3.2"
+  },
+  "devDependencies": {
+    "request": "^2.74.0"
   }
 }
