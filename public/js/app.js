@@ -35,8 +35,40 @@ var SearchForm = React.createClass({
   }
 });
 
-var ArchiveTable = React.createClass({
-  loadArchivesFromServer: function() {
+var QueueStatusBox = React.createClass({
+  getInitialState: function() {
+    return { data: [] };
+  },
+  componentDidMount: function() {
+    this.loadQueueLen();
+    setInterval(this.loadQueueLen, this.props.pollInterval);
+  },
+  loadQueueLen: function() {
+    $.ajax({
+        url: this.props.url,
+        dataType: 'json',
+        cache: false,
+        success: function(data) {
+          console.log(data)
+          this.setState({data: data});
+          console.log(this.state.data)
+        }.bind(this),
+        error: function(xhr, status, err) {
+          console.error(this.props.url, status, err.toString());
+        }.bind(this)
+    });
+  },
+  render: function() {
+    return(
+      <div className="queueStatusBox">
+        Current queue length: {this.state.data['queueLength']}
+      </div>
+    );
+  }
+});
+
+var CaptureTable = React.createClass({
+  loadCapturesFromServer: function() {
     $.ajax({
       url: this.props.url,
       dataType: 'json',
@@ -58,8 +90,7 @@ var ArchiveTable = React.createClass({
       type: 'POST',
       data: url,
       success: function(data) {
-        console.log('asdf');
-        //this.setState({data: data});
+//        this.setState({data: data});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -70,30 +101,31 @@ var ArchiveTable = React.createClass({
     return { data: [] };
   },
   componentDidMount: function() {
-    this.loadArchivesFromServer();
-    setInterval(this.loadArchivesFromServer, this.props.pollInterval);
+    this.loadCapturesFromServer();
+    setInterval(this.loadCapturesFromServer, this.props.pollInterval);
   },
   render: function() {
     return(
-      <div className="archiveTable">
+      <div className="captureTable">
         <SearchForm onSearchSubmit={this.handleSearchSubmit} />
+        <QueueStatusBox url="/api/queue" pollInterval={2000} data={this.state.data}/>
         <ul>
-          <ArchiveList data={this.state.data}/>
+          <CaptureList data={this.state.data}/>
         </ul>
       </div>
       );
   }
 });
 
-var ArchiveList = React.createClass({
+var CaptureList = React.createClass({
   render: function() {
-    var archiveNodes = this.props.data.map(function(archive) {
+    var captureNodes = this.props.data.map(function(capture) {
       return (
-        <Archive key={archive.id} href={archive.href} createdAt={archive.createdAt} originalImage={archive.originalImage}></Archive>
+        <Capture key={capture.id} href={capture.href} createdAt={capture.createdAt} originalImage={capture.originalImage}></Capture>
         );
     });
     return (
-      <div className="archiveList">
+      <div className="captureList">
       <div className="table-responsive">
       <table className="table">
         <thead>
@@ -104,7 +136,7 @@ var ArchiveList = React.createClass({
         </tr>
         </thead>
         <tbody>
-        {archiveNodes}
+        {captureNodes}
         </tbody>
       </table>
       </div>
@@ -113,10 +145,10 @@ var ArchiveList = React.createClass({
   }
 });
 
-var Archive = React.createClass({
+var Capture = React.createClass({
   render: function() {
     return(
-      <tr className="archive">
+      <tr className="capture">
         <td>{this.props.createdAt}</td>
         <td>{this.props.href}</td>
         <td><a href={this.props.originalImage}><img src={this.props.originalImage} width="200px" /></a></td>
@@ -126,6 +158,6 @@ var Archive = React.createClass({
 });
 
 ReactDOM.render(
-  <ArchiveTable url="/api/archives" pollInterval={2000}/> , document.getElementById('content')
+  <CaptureTable url="/api/captures" pollInterval={2000}/> , document.getElementById('content')
 );
 

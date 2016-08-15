@@ -28,7 +28,6 @@ app.engine('hbs', hbs.express4({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
 app.use(function (error, request, response, next) {
     response.status(error.status || 500);
     response.json({ error: error.message });
