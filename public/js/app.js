@@ -1,5 +1,4 @@
-
-var data = [{"createdAt":"2016-08-13T22:21:52.529Z","domain":"github.com","filename":"github.com/_1471126912529.png","href":"http://github.com/","id":"2c7d432f-9ce6-4a1d-afbf-90a367d1b433","originalImage":"https://storage.googleapis.com/waybackmachine_default/github.com/_1471126912529.png","path":"/","requestedUrl":"http://github.com"},{"createdAt":"2016-08-13T22:04:57.631Z","domain":"google.com","filename":"google.com/_1471125897631.png","href":"http://google.com/","id":"4e6c076e-c751-4f72-b992-42082a02d3fe","originalImage":"https://storage.googleapis.com/waybackmachine_default/google.com/_1471125897631.png","path":"/","requestedUrl":"http://google.com"},{"createdAt":"2016-08-13T23:49:24.040Z","domain":"github.com","filename":"github.com/_1471132164040.png","href":"http://github.com/","id":"352e2289-dd23-470b-9003-212039e4f15e","originalImage":"https://storage.googleapis.com/waybackmachine_default/github.com/_1471132164040.png","path":"/","requestedUrl":"http://github.com"},{"createdAt":"2016-08-13T23:44:01.975Z","domain":"apple.com","filename":"apple.com/_1471131841975.png","href":"http://apple.com/","id":"236b77b1-67a9-4301-9bed-ec26aa5c16ac","originalImage":"https://storage.googleapis.com/waybackmachine_default/apple.com/_1471131841975.png","path":"/","requestedUrl":"http://apple.com"},{"createdAt":"2016-08-13T21:06:09.315Z","domain":"google.com","filename":"google.com/_1471122369315.png","href":"http://google.com/","id":"14d8c0b8-326b-44ce-bf6f-5acac0d93fa9","originalImage":"https://storage.googleapis.com/waybackmachine_default/google.com/_1471122369315.png","path":"/","requestedUrl":"http://google.com"}];
+// app.js
 
 var SearchForm = React.createClass({
   getInitialState: function() {
@@ -9,36 +8,77 @@ var SearchForm = React.createClass({
     this.setState({ url: e.target.value });
   },
   handleSubmit: function(e) {
+    console.log('here');
     e.preventDefault();
     var url = this.state.url.trim();
     if (!url) {
       return;
     }
-    this.props.onCommentSubmit({author: author, text: text});
+    this.props.onSearchSubmit({ url: url});
     this.setState({ url: '' });
   },
   render: function() {
     return(
-      <form className="searchForm" onSubmit={this.handleSubmit}>
+      <form className="searchForm form-inline" onSubmit={this.handleSubmit}>
+      <div className="form-group">
         <input
           type="text"
           placeholder="Page to archive..."
           value={ this.state.url }
           onChange={ this.handleURLChange }
+          className="form-control"
         />
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Submit" className="btn btn-primary"/>
+        </div>
       </form>
     );
   }
 });
 
 var ArchiveTable = React.createClass({
+  loadArchivesFromServer: function() {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        console.log(data);
+        this.setState({data: data['captures']});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  handleSearchSubmit: function(url) {
+    console.log(url);
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      type: 'POST',
+      data: url,
+      success: function(data) {
+        console.log('asdf');
+        //this.setState({data: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  getInitialState: function() {
+    return { data: [] };
+  },
+  componentDidMount: function() {
+    this.loadArchivesFromServer();
+    setInterval(this.loadArchivesFromServer, this.props.pollInterval);
+  },
   render: function() {
     return(
       <div className="archiveTable">
-        <SearchForm />
+        <SearchForm onSearchSubmit={this.handleSearchSubmit} />
         <ul>
-          <ArchiveList data={this.props.data}/>
+          <ArchiveList data={this.state.data}/>
         </ul>
       </div>
       );
@@ -49,7 +89,7 @@ var ArchiveList = React.createClass({
   render: function() {
     var archiveNodes = this.props.data.map(function(archive) {
       return (
-        <Archive key={archive.id} href={archive.href} createdAt={archive.createdAt} filename={archive.filename}></Archive>
+        <Archive key={archive.id} href={archive.href} createdAt={archive.createdAt} originalImage={archive.originalImage}></Archive>
         );
     });
     return (
@@ -77,15 +117,15 @@ var Archive = React.createClass({
   render: function() {
     return(
       <tr className="archive">
-        <td>Time: {this.props.createdAt}</td>
-        <td>Url: {this.props.href}</td>
-        <td><img src={'https://storage.googleapis.com/waybackmachine_default/' + this.props.filename} width="200px" /></td>
+        <td>{this.props.createdAt}</td>
+        <td>{this.props.href}</td>
+        <td><a href={this.props.originalImage}><img src={this.props.originalImage} width="200px" /></a></td>
       </tr>
       );
   }
 });
 
 ReactDOM.render(
-  <ArchiveTable data={data}/> , document.getElementById('content')
+  <ArchiveTable url="/api/archives" pollInterval={2000}/> , document.getElementById('content')
 );
 
