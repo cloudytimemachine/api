@@ -121,7 +121,7 @@ var CaptureList = React.createClass({
   render: function() {
     var captureNodes = this.props.data.map(function(capture) {
       return (
-        <Capture key={capture.id} href={capture.href} createdAt={capture.createdAt} originalImage={capture.originalImage}></Capture>
+        <Capture key={capture.id} href={capture.href} createdAt={capture.createdAt} path={capture.path} originalImage={capture.originalImage}></Capture>
         );
     });
     return (
@@ -132,6 +132,7 @@ var CaptureList = React.createClass({
         <tr>
           <th>Taken</th>
           <th>URL</th>
+          <th>Path</th>
           <th>Image</th>
         </tr>
         </thead>
@@ -147,10 +148,12 @@ var CaptureList = React.createClass({
 
 var Capture = React.createClass({
   render: function() {
+    var timeAgo =  moment(this.props.createdAt).fromNow();
     return(
       <tr className="capture">
-        <td>{this.props.createdAt}</td>
+        <td>{timeAgo}</td>
         <td>{this.props.href}</td>
+        <td>{this.props.path}</td>
         <td><a href={this.props.originalImage}><img src={this.props.originalImage} width="200px" /></a></td>
       </tr>
       );
