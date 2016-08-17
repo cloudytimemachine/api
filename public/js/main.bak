@@ -1,0 +1,7 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import CaptureTable from './captureTable';
+
+ReactDOM.render(
+  <CaptureTable url="/api/captures" pollInterval={2000}/> , document.getElementById('content')
+);
