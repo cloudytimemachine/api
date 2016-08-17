@@ -4,7 +4,8 @@
   "description": "Frontend for lazy wayback machine",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "start-dev": "webpack && node index.js"
   },
   "repository": "https://github.com/cloudytimemachine/frontend",
   "author": "Ross Kukulinski <ross@kukulinski.com>",

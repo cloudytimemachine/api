@@ -29,7 +29,6 @@ var CaptureInformation = React.createClass({
   }
 });
 
-
 var CaptureScreen = React.createClass({
   render: function() {
     return(
@@ -39,7 +38,6 @@ var CaptureScreen = React.createClass({
       </div>
       );
   }
-
 });
 
 var captureURL = "/api/capture/" + window.location.pathname.split('/')[2];
