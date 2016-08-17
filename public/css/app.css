@@ -6,3 +6,8 @@ body {
 .navbar {
   margin-bottom: 20px;
 }
+
+img {
+  width: 100%;
+  max-width: 1000px;
+}

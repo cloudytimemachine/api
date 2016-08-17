@@ -1,8 +1,11 @@
 module.exports = {
-     entry: './src/main.js',
+     entry: {
+        main: './src/main/main.js',
+        capture:  './src/capture/capture.js'
+     },
      output: {
          path: './public/bin',
-         filename: 'app.bundle.js',
+         filename: 'app.[name].js',
      },
      module: {
          loaders: [{

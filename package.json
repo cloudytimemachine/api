@@ -15,6 +15,7 @@
     "bull": "^1.0.0-rc2",
     "dnscache": "0.0.4",
     "express": "^4.13.4",
+    "express-hbs": "^1.0.2",
     "lodash": "^4.13.1",
     "moment": "^2.14.1",
     "morgan": "^1.7.0",
