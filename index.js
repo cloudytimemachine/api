@@ -12,19 +12,13 @@ var routes = require('./lib/routes');
 var port = process.env.PORT || 3001;
 
 var express = require('express');
-var hbs = require('express-hbs');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var path = require('path');
 
 var app = express();
 app.use(logger('dev'));
-app.set('view engine', 'hbs');
 app.use('/', express.static(path.join(__dirname, 'public')));
-app.set('views', __dirname + '/views');
-app.engine('hbs', hbs.express4({
-  partialsDir: __dirname + '/views/partials'
-}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
