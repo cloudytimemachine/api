@@ -7,7 +7,7 @@ body {
   margin-bottom: 20px;
 }
 
-img {
+.captureDetails {
   width: 100%;
   max-width: 1000px;
 }

@@ -1,14 +1,27 @@
 var $ = require('jquery');
 
-var CaptureInformation = React.createClass({
-   loadCaptureFromServer: function() {
+var CaptureMetaInformation = React.createClass({
+  render: function() {
+    return(
+      <div>
+        <p>ID: {this.props.id}</p>
+        <p>Created At: {this.props.createdAt}</p>
+        <p>Domain: {this.props.domain}</p>
+        <p>Path: {this.props.path}</p>
+      </div>
+      );
+  }
+});
+
+var CaptureDetailScreen = React.createClass({
+  loadCaptureFromServer: function() {
     $.ajax({
       url: this.props.url,
       dataType: 'json',
       cache: false,
       success: function(data) {
         console.log(data);
-        this.setState({data: data});
+        this.setState({data: data['capture']});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -22,25 +35,21 @@ var CaptureInformation = React.createClass({
     this.loadCaptureFromServer();
   },
   render: function() {
-    var data = JSON.stringify(this.state.data['capture']);
+    var imgLink = this.state.data['originalImage'];
     return(
-      <div> {data} </div>
-      );
-  }
-});
-
-var CaptureScreen = React.createClass({
-  render: function() {
-    return(
-      <div className="captureScreen">
-        <img src="https://storage.googleapis.com/waybackmachine_default/google.com/_1471289737912.png" />
-        <CaptureInformation url={this.props.url} />
+      <div>
+       <img className="captureDetails" src={imgLink} />
+       <CaptureMetaInformation
+        createdAt={this.state.data['createdAt']}
+        domain={this.state.data['domain']}
+        path={this.state.data['path']}
+        id={this.state.data['id']}
+        />
       </div>
       );
   }
 });
 
 var captureURL = "/api/capture/" + window.location.pathname.split('/')[2];
-
 ReactDOM.render(
-  <CaptureScreen url={captureURL} />, document.getElementById('capture'));
+  <CaptureDetailScreen url={captureURL} />, document.getElementById('capture'));
