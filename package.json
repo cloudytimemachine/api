@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "start-dev": "node index.js"
+    "test": "mocha"
   },
   "repository": "https://github.com/cloudytimemachine/api",
   "author": "Ross Kukulinski <ross@kukulinski.com>",
@@ -23,5 +23,6 @@
     "rethinkdb": "^2.3.2"
   },
   "devDependencies": {
+    "mocha": "^3.0.2"
   }
 }
