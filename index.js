@@ -6,7 +6,7 @@ dnscache = require('dnscache')({
 });
 var db = require('./lib/db');
 
-process.title = 'frontend';
+process.title = 'api';
 
 var routes = require('./lib/routes');
 var port = process.env.PORT || 3001;
