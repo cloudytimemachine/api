@@ -21,7 +21,7 @@ machine:
 dependencies:
   pre:
     - npm install
-    - docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD quay.io 
+    - docker login -e test@test.com -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD quay.io 
     - docker-build -f deploy/common.config
   override:
     - echo "overriding inferred dependencies"
