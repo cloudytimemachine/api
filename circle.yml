@@ -41,6 +41,7 @@ deployment:
       - docker-push -f deploy/common.config
       - ensure-kubectl
       - prepare-kubectl
+      - kubectl config use-context ${KUBECONTEXTQA}
       - k8s-deploy -f deploy/staging.config
       # - deploy-service ${KUBECONTEXTPROD} deploy/namespaces/production
   # qa:
