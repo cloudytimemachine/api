@@ -12,11 +12,11 @@ machine:
     KUBECONTEXTQA: ctm-staging
     KUBECONTEXTPROD: ctm-prod
 
+  node:
+    version: 4.2.2
+
   services:
     - docker
-
-  node:
-    version: 4.5.0
 
 dependencies:
   pre:
