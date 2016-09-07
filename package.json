@@ -23,7 +23,7 @@
     "rethinkdb": "^2.3.2"
   },
   "devDependencies": {
-    "k8s-scripts": "git+https://github.com/rosskukulinski/k8s-scripts.git#add-deploy",
+    "k8s-scripts": "^2.0.0",
     "mocha": "^3.0.2"
   }
 }
