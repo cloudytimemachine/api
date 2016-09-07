@@ -1,0 +1,56 @@
+machine:
+  environment:
+    PATH: $PATH:node_modules/.bin
+    EXTERNAL_REGISTRY_BASE_DOMAIN: quay.io/cloudytimemachine
+    REPOSITORY_NAME: api
+    REGISTRY_EMAIL: none
+
+    CI_SHA1: $CIRCLE_SHA1
+    CI_BRANCH: $CIRCLE_BRANCH
+    CI_BUILD_NUM: $CIRCLE_BUILD_NUM
+
+    KUBECONTEXTQA: ctm-staging
+    KUBECONTEXTPROD: ctm-prod
+
+  services:
+    - docker
+
+  node:
+    version: 4.5.0
+
+dependencies:
+  pre:
+    - npm install
+    - docker-build -f deploy/common.config
+  override:
+    - echo "overriding inferred dependencies"
+
+database:
+  override:
+    - echo "overriding inferred dependencies"
+
+test:
+  override:
+    # - docker run $CONTAINER bundle exec rake test
+    - npm test
+
+deployment:
+  production:
+    branch: [master, k8s]
+    commands:
+      - docker-push -f deploy/common.config
+      - ensure-kubectl
+      - prepare-kubectl
+      - k8s-deploy -f deploy/staging.config
+      # - deploy-service ${KUBECONTEXTPROD} deploy/namespaces/production
+  # qa:
+  #   branch: qa
+  #   commands:
+  #     - docker-push
+  #     - prepare-kubectl ${KUBECONTEXTWORKING}
+  #     - deploy-service  ${KUBECONTEXTWORKING} deploy/namespaces/qa/configs/default rolling
+  #
+  # ephermal:
+  #   branch: feature_*
+  #   commands:
+  #     - commands to create resources using $CIRCLE_BRANCH
