@@ -20,9 +20,9 @@ machine:
 
 dependencies:
   pre:
-    - npm install
-    - docker login -e test@test.com -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD quay.io 
-    - docker-build -f deploy/common.config
+    - if [[ -z $CIRCLE_TAG ]] ; then npm install; exit $?; fi
+    - if [[ -z $CIRCLE_TAG ]] ; then docker login -e test@test.com -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD quay.io; exit $?; fi
+    - if [[ -z $CIRCLE_TAG ]] ; then docker-build -f deploy/common.config; exit $?; fi
   override:
     - echo "overriding inferred dependencies"
 
@@ -32,27 +32,23 @@ database:
 
 test:
   override:
-    # - docker run $CONTAINER bundle exec rake test
-    - npm test
+    - if [[ -z $CIRCLE_TAG ]] ; then npm test; exit $?; fi
 
 deployment:
-  production:
-    branch: [master, k8s]
+  staging:
+    branch: master
+    owner: cloudytimemachine
     commands:
       - docker-push -f deploy/common.config
       - ensure-kubectl
       - prepare-kubectl
       - kubectl config use-context ${KUBECONTEXTQA}
       - k8s-deploy -f deploy/staging.config
-      # - deploy-service ${KUBECONTEXTPROD} deploy/namespaces/production
-  # qa:
-  #   branch: qa
-  #   commands:
-  #     - docker-push
-  #     - prepare-kubectl ${KUBECONTEXTWORKING}
-  #     - deploy-service  ${KUBECONTEXTWORKING} deploy/namespaces/qa/configs/default rolling
-  #
-  # ephermal:
-  #   branch: feature_*
-  #   commands:
-  #     - commands to create resources using $CIRCLE_BRANCH
+  production:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    owner: cloudytimemachine
+    commands:
+      - ensure-kubectl
+      - prepare-kubectl
+      - kubectl config use-context ${KUBECONTEXTPROD}
+      - k8s-deploy -f deploy/production.config
