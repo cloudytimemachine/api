@@ -1,22 +1,22 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: frontend
+  name: api
   labels:
-    app: frontend
+    app: api
 spec:
   template:
     metadata:
       labels:
-        app: frontend
+        app: api
     spec:
+      imagePullSecrets:
+      - name: cloudytimemachine-kubernetes-pull-secret
       containers:
-        - name: frontend
-          imagePullPolicy: Never
-          image: quay.io/cloudytimemachine/frontend:latest
+        - name: api
+          imagePullPolicy: IfNotPresent
+          image: quay.io/cloudytimemachine/api:latest
           ports:
-            - containerPort: 3000
-              protocol: TCP
             - containerPort: 3000
               protocol: TCP
           env:

@@ -1,4 +1,4 @@
-# cloudytimemachine frontend
+# cloudytimemachine api
 ## HTTP API
 
 ### GET :3001/version
