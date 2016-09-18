@@ -1,0 +1,113 @@
+swagger: "2.0"
+info:
+  description: |
+    This is the documentation for Cloudy Time Machine's public-facing, REST API.
+
+    The permanent location for this file is within the [api](https://github.com/piggybacktrips/piggyback-api) Github repository.
+
+  version: "1.0.0"
+  title: Cloudy Time Machine Client REST API
+  contact:
+    name: Ross Kukulinski
+    email: ross@kukulinski.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: cloudytimemachine.com
+#host: localhost:9000
+basePath: /api
+schemes:
+  - http
+
+paths:
+  /snapshots:
+    get:
+      tags:
+        - snapshot
+      summary: Get all snapshots
+      description: Returns an array of snapshot objects based on the requested parameters
+      operationId: getsnapshots
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: count
+          description: Number of snapshots to return
+          required: false
+          default: 5
+          type: number
+        - in: query
+          name: domain
+          description: Limit snapshots to this Domain
+          required: false
+          type: string
+        - in: query
+          name:  url
+          description: Complete URL to request snapshots for
+          required: false
+          type: string
+        - in: query
+          name: startTime
+          description: Beginning of window to return snapshots from
+          required: false
+          type: number
+        - in: query
+          name: endTime
+          description: End of window to return snapshots from
+          required: false
+          type: number
+      responses:
+        "404":
+          description: NotFoundError
+          schema:
+            $ref: "#/definitions/ErrorMessage"
+        "200":
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Snapshot"
+
+definitions:
+  ErrorMessage:
+    type: object
+    properties:
+      message:
+        type: string
+        description: Human readable error message
+      code:
+        type: string
+        description: Error code name
+
+  Snapshot:
+    type: object
+    properties:
+      id:
+        type: string
+        description: UUID of the Snapshot
+      requestedAt:
+        type: integer
+        format: int32
+        description: Timestamp when this Snapshot was was requested
+      createdAt:
+        type: integer
+        format: int32
+        description: Timestamp when the snapshot was completed
+      domain:
+        type: string
+        description: The domain of the reuqested URL
+      path:
+        type: string
+        description: URL Path that was requested
+      requestedUrl:
+        type: string
+        format: url
+        description: The complete url that was requested
+      originalImage:
+        type: string
+        format: url
+        description: The URL to the full size screenshot of the page
+      thumbnailImage:
+        type: string
+        format: url
+        description: The URL to the thumbnail sized screenshot of the page
