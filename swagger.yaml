@@ -61,11 +61,6 @@ paths:
         - application/json
       parameters:
         - in: query
-          name: id
-          description: UUID of snapshot
-          required: false
-          type: string
-        - in: query
           name: count
           description: Number of snapshots to return
           required: false
@@ -100,6 +95,33 @@ paths:
           description: successful operation
           schema:
             type: array
+            items:
+              $ref: "#/definitions/Snapshot"
+
+  /snapshots/{snapshotId}:
+    get:
+      tags:
+        - snapshot
+      summary: Return a single snapshot from CTM
+      description: Returns a specific snapshot object identified by snapshotId
+      operationId: getSnapshot
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: snapshotId
+          description: ID of snapshot to return
+          required: true
+          type: string
+      responses:
+        "404":
+          description: NotFoundError
+          schema:
+            $ref: "#/definitions/ErrorMessage"
+        "200":
+          description: successful operation
+          schema:
+            type: object
             items:
               $ref: "#/definitions/Snapshot"
 
