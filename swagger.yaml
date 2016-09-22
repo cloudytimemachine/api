@@ -61,6 +61,11 @@ paths:
         - application/json
       parameters:
         - in: query
+          name: id
+          description: UUID of snapshot
+          required: false
+          type: string
+        - in: query
           name: count
           description: Number of snapshots to return
           required: false
