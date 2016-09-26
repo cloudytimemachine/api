@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'TESTING';
+
 var app = require('../lib');
 var should = require('should');
 var request = require('superagent');

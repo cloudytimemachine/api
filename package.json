@@ -16,11 +16,9 @@
     "body-parser": "^1.15.1",
     "bull": "^1.0.0-rc2",
     "bunyan": "^1.8.1",
-    "dnscache": "0.0.4",
     "express": "^4.13.4",
+    "http-shutdown": "^1.1.0",
     "lodash": "^4.13.1",
-    "moment": "^2.14.1",
-    "morgan": "^1.7.0",
     "pkginfo": "^0.4.0",
     "rethinkdb": "^2.3.2"
   },
