@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha"
+    "test": "mocha && npm run standard",
+    "standard": "semistandard"
   },
   "repository": "https://github.com/cloudytimemachine/api",
   "author": "Ross Kukulinski <ross@kukulinski.com>",
@@ -14,6 +15,7 @@
     "async": "^2.0.0-rc.6",
     "body-parser": "^1.15.1",
     "bull": "^1.0.0-rc2",
+    "bunyan": "^1.8.1",
     "dnscache": "0.0.4",
     "express": "^4.13.4",
     "lodash": "^4.13.1",
@@ -24,6 +26,20 @@
   },
   "devDependencies": {
     "k8s-scripts": "^2.0.0",
-    "mocha": "^3.0.2"
+    "mocha": "^3.0.2",
+    "semistandard": "^9.0.0",
+    "should": "^11.1.0",
+    "superagent": "^2.3.0"
+  },
+  "semistandard": {
+    "globals": [
+      "describe",
+      "before",
+      "after",
+      "beforeEach",
+      "afterEach",
+      "describe",
+      "it"
+    ]
   }
 }
