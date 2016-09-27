@@ -3,13 +3,17 @@ process.env.NODE_ENV = 'TESTING';
 var app = require('../lib');
 var should = require('should');
 var request = require('superagent');
+var baseUrl;
 
 describe('Application', function () {
   before(function (callback) {
-    app.start(callback);
+    app.start(function () {
+      baseUrl = 'localhost:' + app.port;
+      return callback();
+    });
   });
   after(function (callback) {
-    this.timeout(10000);
+    baseUrl = null;
     app.stop(callback);
   });
 
@@ -23,17 +27,26 @@ describe('Application', function () {
 
   it('should open http server on port 3001', function (done) {
     request
-      .get('localhost:' + app.port)
+      .get(baseUrl)
       .end(function (err, res) {
-        return done(err);
+        should.not.exist(err);
+        should.exist(res);
+        return done();
       });
   });
 
-  it('should have a health endpoint on port 3002', function (done) {
+  it('should have a health endpoint', function (done) {
     request
-      .get('localhost:' + app.healthPort + '/healthz')
+      .get(baseUrl + '/healthz')
       .end(function (err, res) {
-        return done(err);
+        should.not.exist(err);
+        should.exist(res);
+        var body = res.body;
+        should.exist(body.message);
+        body.message.should.equal('OK');
+        should.exist(body.db);
+        body.db.should.equal('HEALTHY');
+        return done();
       });
   });
 });

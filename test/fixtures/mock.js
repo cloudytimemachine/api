@@ -9,9 +9,19 @@ var api = module.exports = {};
 var shotQueue;
 var responseQueue;
 
-api.start = function () {
+api.start = function (callback) {
+  var ready = false;
+  function onReady () {
+    if (ready) {
+      return callback();
+    }
+    ready = true;
+  }
+
   shotQueue = Queue('webshot request', 6379, redisHost);
+  shotQueue.once('ready', onReady);
   responseQueue = Queue('webshot finished', 6379, redisHost);
+  responseQueue.once('ready', onReady);
 
   shotQueue.process(1, function (job, done) {
     console.log('queue request to process ', job.data.url);
