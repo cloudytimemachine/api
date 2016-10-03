@@ -55,7 +55,7 @@ paths:
       tags:
         - snapshot
       summary: Get all snapshots
-      description: Returns an array of completed snapshots based on the requested parameters.  Users may not specify both `domain` AND `url`.  `startTime` defaults to the beginning of recorded time and `endTime` defaults to the current time.
+      description: Returns an array of completed snapshots based on the requested parameters.  Users may not specify both `host` AND `url`.  `startTime` defaults to the beginning of recorded time and `endTime` defaults to the current time.
       operationId: getsnapshots
       produces:
         - application/json
@@ -67,8 +67,8 @@ paths:
           default: 5
           type: number
         - in: query
-          name: domain
-          description: Limit snapshots to this Domain
+          name: host
+          description: Limit snapshots to this host
           required: false
           type: string
         - in: query
@@ -95,33 +95,6 @@ paths:
           description: successful operation
           schema:
             type: array
-            items:
-              $ref: "#/definitions/Snapshot"
-
-  /snapshots/{snapshotId}:
-    get:
-      tags:
-        - snapshot
-      summary: Return a single snapshot from CTM
-      description: Returns a specific snapshot object identified by snapshotId
-      operationId: getSnapshot
-      produces:
-        - application/json
-      parameters:
-        - in: query
-          name: snapshotId
-          description: ID of snapshot to return
-          required: true
-          type: string
-      responses:
-        "404":
-          description: NotFoundError
-          schema:
-            $ref: "#/definitions/ErrorMessage"
-        "200":
-          description: successful operation
-          schema:
-            type: object
             items:
               $ref: "#/definitions/Snapshot"
 
@@ -154,9 +127,9 @@ definitions:
         type: integer
         format: int32
         description: Timestamp when the snapshot was completed
-      domain:
+      host:
         type: string
-        description: The domain of the reuqested URL
+        description: The host of the reuqested URL
       path:
         type: string
         description: URL Path that was requested
