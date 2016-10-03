@@ -6,6 +6,7 @@ var request = require('superagent');
 var baseUrl;
 
 describe('Application', function () {
+  this.timeout(10000);
   before(function (callback) {
     app.start(function () {
       baseUrl = 'localhost:' + app.port;

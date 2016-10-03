@@ -4,10 +4,12 @@ var app = require('../lib');
 var should = require('should');
 var request = require('superagent');
 var async = require('async');
+var _ = require('lodash');
 
 var mock = require('./fixtures/mock');
 
 describe('/snapshots', function () {
+  this.timeout(10000);
   before(function (callback) {
     async.parallel([
       async.apply(app.start),
@@ -33,24 +35,217 @@ describe('/snapshots', function () {
         .end(function (err, res) {
           should.not.exist(err);
           should.exist(res);
-          console.log(res);
-          should.exist(res.id);
-          should.exist(res.status);
-          res.status.should.equal('PENDING');
-          should.exist(res.createdAt);
-          res.createdAt.should.be.approximately(new Date());
-          should.exist(res.domain);
-          res.domain.should.equal('xkcd.com');
-          should.exist(res.path);
-          res.path.should.equal('/');
-          should.exist(res.requestedUrl);
-          res.requestedUrl.should.equal('http://xkcd.com/');
-          should.not.exist(res.originalImage);
-          should.not.exist(res.thumbnailImage);
+          should.exist(res.body);
+          var body = res.body;
+          should.exist(body.id);
+          should.exist(body.status);
+          body.status.should.equal('PENDING');
+          should.exist(body.createdAt);
+          var createdAt = new Date(body.createdAt);
+          createdAt.getTime().should.be.approximately(new Date().getTime(), 1000);
+          should.exist(body.host);
+          body.host.should.equal('xkcd.com');
+          should.exist(body.path);
+          body.path.should.equal('/');
+          should.exist(body.requestedUrl);
+          body.requestedUrl.should.equal('http://xkcd.com');
+          should.not.exist(body.originalImage);
+          should.not.exist(body.thumbnailImage);
           return done();
         });
     });
   });
   // PENDING vs IN_PROGRESS vs FAILED vs SUCCESSFUL
-  describe('GET /snapshots/:snapshotId');
+  describe('GET /snapshots/:snapshotId', function () {
+    describe('failed', function () {
+      var id;
+      before(function (done) {
+        var snapshotRequest = {
+          requestedUrl: 'doesnotexist.com'
+        };
+        request
+          .post('localhost:' + app.port + '/snapshots')
+          .send(snapshotRequest)
+          .end(function (err, res) {
+            should.not.exist(err);
+            should.exist(res);
+            should.exist(res.body);
+            var body = res.body;
+            should.exist(body.id);
+            id = body.id;
+            should.exist(body.status);
+            body.status.should.equal('PENDING');
+            return setTimeout(done, 50);
+          });
+      });
+
+      it('Should have FAILED status', function (done) {
+        request
+          .get('localhost:' + app.port + '/snapshots/' + id)
+          .end(function (err, res) {
+            should.not.exist(err);
+            should.exist(res);
+            should.exist(res.body);
+            var body = res.body;
+            should.exist(body.id);
+            id = body.id;
+            should.exist(body.status);
+            body.status.should.equal('FAILED');
+            body.updatedAt.should.not.equal(body.createdAt);
+            done();
+          });
+      });
+    });
+
+    describe('success', function () {
+      var id;
+      before(function (done) {
+        var snapshotRequest = {
+          requestedUrl: 'xkcd.com'
+        };
+        request
+          .post('localhost:' + app.port + '/snapshots')
+          .send(snapshotRequest)
+          .end(function (err, res) {
+            should.not.exist(err);
+            should.exist(res);
+            should.exist(res.body);
+            var body = res.body;
+            should.exist(body.id);
+            id = body.id;
+            should.exist(body.status);
+            body.status.should.equal('PENDING');
+            return setTimeout(done, 50);
+          });
+      });
+
+      it('Should have SUCCESSFUL status', function (done) {
+        request
+          .get('localhost:' + app.port + '/snapshots/' + id)
+          .end(function (err, res) {
+            should.not.exist(err);
+            should.exist(res);
+            should.exist(res.body);
+            var body = res.body;
+            should.exist(body.id);
+            id = body.id;
+            should.exist(body.status);
+            body.status.should.equal('SUCCESSFUL');
+            should.exist(body.originalImage);
+            should.exist(body.thumbnailImage);
+            body.updatedAt.should.not.equal(body.createdAt);
+            done();
+          });
+      });
+    });
+  });
+
+  describe('GET /api/snapshots', function () {
+    // Need to implement and test additional parameters
+    it('it should return last 10 screenshots', function (done) {
+      request
+        .get('localhost:' + app.port + '/snapshots')
+        .end(function (err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          should.exist(res.body);
+          var body = res.body;
+          body.should.be.an.Array();
+          body.length.should.equal(10);
+          _.each(body, function eachSnapshot (snapshot) {
+            should.exist(snapshot.id);
+            should.exist(snapshot.status);
+            should.exist(snapshot.createdAt);
+            should.exist(snapshot.updatedAt);
+            should.exist(snapshot.host);
+            should.exist(snapshot.path);
+            should.exist(snapshot.requestedUrl);
+          });
+
+          return done();
+        });
+    });
+  });
+  // PENDING vs IN_PROGRESS vs FAILED vs SUCCESSFUL
+  describe('GET /snapshots/:snapshotId', function () {
+    describe('failed', function () {
+      var id;
+      before(function (done) {
+        var snapshotRequest = {
+          requestedUrl: 'doesnotexist.com'
+        };
+        request
+          .post('localhost:' + app.port + '/snapshots')
+          .send(snapshotRequest)
+          .end(function (err, res) {
+            should.not.exist(err);
+            should.exist(res);
+            should.exist(res.body);
+            var body = res.body;
+            should.exist(body.id);
+            id = body.id;
+            should.exist(body.status);
+            body.status.should.equal('PENDING');
+            return setTimeout(done, 50);
+          });
+      });
+
+      it('Should have FAILED status', function (done) {
+        request
+          .get('localhost:' + app.port + '/snapshots/' + id)
+          .end(function (err, res) {
+            should.not.exist(err);
+            should.exist(res);
+            should.exist(res.body);
+            var body = res.body;
+            should.exist(body.id);
+            id = body.id;
+            should.exist(body.status);
+            body.status.should.equal('FAILED');
+            done();
+          });
+      });
+    });
+
+    describe('success', function () {
+      var id;
+      before(function (done) {
+        var snapshotRequest = {
+          requestedUrl: 'xkcd.com'
+        };
+        request
+          .post('localhost:' + app.port + '/snapshots')
+          .send(snapshotRequest)
+          .end(function (err, res) {
+            should.not.exist(err);
+            should.exist(res);
+            should.exist(res.body);
+            var body = res.body;
+            should.exist(body.id);
+            id = body.id;
+            should.exist(body.status);
+            body.status.should.equal('PENDING');
+            return setTimeout(done, 50);
+          });
+      });
+
+      it('Should have SUCCESSFUL status', function (done) {
+        request
+          .get('localhost:' + app.port + '/snapshots/' + id)
+          .end(function (err, res) {
+            should.not.exist(err);
+            should.exist(res);
+            should.exist(res.body);
+            var body = res.body;
+            should.exist(body.id);
+            id = body.id;
+            should.exist(body.status);
+            body.status.should.equal('SUCCESSFUL');
+            should.exist(body.originalImage);
+            should.exist(body.thumbnailImage);
+            done();
+          });
+      });
+    });
+  });
 });

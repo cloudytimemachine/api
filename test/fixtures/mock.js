@@ -1,8 +1,13 @@
 var Queue = require('bull');
 var async = require('async');
 var urls = require('./urls');
+var _ = require('lodash');
+var config = require('../../lib/config');
 
-var redisHost = process.env.REDIS_SERVICE_HOST || '127.0.0.1';
+var redisHost = config.redis.host;
+var redisPort = config.redis.port;
+var reqQueueName = config.bull.requestQueue;
+var resQueueName = config.bull.responseQueue;
 
 var api = module.exports = {};
 
@@ -18,16 +23,27 @@ api.start = function (callback) {
     ready = true;
   }
 
-  shotQueue = Queue('webshot request', 6379, redisHost);
+  shotQueue = Queue(reqQueueName, redisPort, redisHost);
   shotQueue.once('ready', onReady);
-  responseQueue = Queue('webshot finished', 6379, redisHost);
+  responseQueue = Queue(resQueueName, redisPort, redisHost);
   responseQueue.once('ready', onReady);
 
   shotQueue.process(1, function (job, done) {
-    console.log('queue request to process ', job.data.url);
+    var data = job.data;
 
-    var results = urls[job.data.url];
-    done(null, results);
+    var results = _.clone(urls[data.requestedUrl]);
+    if (!results) {
+      responseQueue.add({
+        id: data.id,
+        status: 'FAILED',
+        error: 'Unable to snapshot url'
+      });
+      return done(new Error('Unable to process'));
+    }
+    results.id = data.id;
+    results.status = 'SUCCESSFUL';
+    responseQueue.add(results);
+    return done();
   });
 };
 
