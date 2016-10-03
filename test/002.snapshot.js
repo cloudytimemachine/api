@@ -29,7 +29,7 @@ describe('/snapshots', function () {
         requestedUrl: 'xkcd.com'
       };
       request
-        .post('localhost:' + app.port + '/snapshots')
+        .post('localhost:' + app.port + '/api/snapshots')
         .send(snapshotRequest)
         .end(function (err, res) {
           should.not.exist(err);
@@ -55,7 +55,7 @@ describe('/snapshots', function () {
     });
   });
   // PENDING vs IN_PROGRESS vs FAILED vs SUCCESSFUL
-  describe('GET /snapshots/:snapshotId', function () {
+  describe('GET /api/snapshots/:snapshotId', function () {
     describe('failed', function () {
       var id;
       before(function (done) {
@@ -63,7 +63,7 @@ describe('/snapshots', function () {
           requestedUrl: 'doesnotexist.com'
         };
         request
-          .post('localhost:' + app.port + '/snapshots')
+          .post('localhost:' + app.port + '/api/snapshots')
           .send(snapshotRequest)
           .end(function (err, res) {
             should.not.exist(err);
@@ -80,7 +80,7 @@ describe('/snapshots', function () {
 
       it('Should have FAILED status', function (done) {
         request
-          .get('localhost:' + app.port + '/snapshots/' + id)
+          .get('localhost:' + app.port + '/api/snapshots/' + id)
           .end(function (err, res) {
             should.not.exist(err);
             should.exist(res);
@@ -103,7 +103,7 @@ describe('/snapshots', function () {
           requestedUrl: 'xkcd.com'
         };
         request
-          .post('localhost:' + app.port + '/snapshots')
+          .post('localhost:' + app.port + '/api/snapshots')
           .send(snapshotRequest)
           .end(function (err, res) {
             should.not.exist(err);
@@ -120,7 +120,7 @@ describe('/snapshots', function () {
 
       it('Should have SUCCESSFUL status', function (done) {
         request
-          .get('localhost:' + app.port + '/snapshots/' + id)
+          .get('localhost:' + app.port + '/api/snapshots/' + id)
           .end(function (err, res) {
             should.not.exist(err);
             should.exist(res);
@@ -143,7 +143,7 @@ describe('/snapshots', function () {
     // Need to implement and test additional parameters
     it('it should return last 10 screenshots', function (done) {
       request
-        .get('localhost:' + app.port + '/snapshots')
+        .get('localhost:' + app.port + '/api/snapshots')
         .end(function (err, res) {
           should.not.exist(err);
           should.exist(res);
@@ -166,7 +166,7 @@ describe('/snapshots', function () {
     });
   });
   // PENDING vs IN_PROGRESS vs FAILED vs SUCCESSFUL
-  describe('GET /snapshots/:snapshotId', function () {
+  describe('GET /api/snapshots/:snapshotId', function () {
     describe('failed', function () {
       var id;
       before(function (done) {
@@ -174,7 +174,7 @@ describe('/snapshots', function () {
           requestedUrl: 'doesnotexist.com'
         };
         request
-          .post('localhost:' + app.port + '/snapshots')
+          .post('localhost:' + app.port + '/api/snapshots')
           .send(snapshotRequest)
           .end(function (err, res) {
             should.not.exist(err);
@@ -191,7 +191,7 @@ describe('/snapshots', function () {
 
       it('Should have FAILED status', function (done) {
         request
-          .get('localhost:' + app.port + '/snapshots/' + id)
+          .get('localhost:' + app.port + '/api/snapshots/' + id)
           .end(function (err, res) {
             should.not.exist(err);
             should.exist(res);
@@ -213,7 +213,7 @@ describe('/snapshots', function () {
           requestedUrl: 'xkcd.com'
         };
         request
-          .post('localhost:' + app.port + '/snapshots')
+          .post('localhost:' + app.port + '/api/snapshots')
           .send(snapshotRequest)
           .end(function (err, res) {
             should.not.exist(err);
@@ -230,7 +230,7 @@ describe('/snapshots', function () {
 
       it('Should have SUCCESSFUL status', function (done) {
         request
-          .get('localhost:' + app.port + '/snapshots/' + id)
+          .get('localhost:' + app.port + '/api/snapshots/' + id)
           .end(function (err, res) {
             should.not.exist(err);
             should.exist(res);
