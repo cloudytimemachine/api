@@ -9,7 +9,6 @@ var _ = require('lodash');
 var mock = require('./fixtures/mock');
 
 describe('/snapshots', function () {
-  this.timeout(10000);
   before(function (callback) {
     async.parallel([
       async.apply(app.start),
@@ -151,7 +150,7 @@ describe('/snapshots', function () {
           should.exist(res.body);
           var body = res.body;
           body.should.be.an.Array();
-          body.length.should.equal(10);
+          body.length.should.be.belowOrEqual(10);
           _.each(body, function eachSnapshot (snapshot) {
             should.exist(snapshot.id);
             should.exist(snapshot.status);
