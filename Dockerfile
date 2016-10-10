@@ -1,4 +1,4 @@
-FROM node:4.5
+FROM node:4.6
 
 RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.2/dumb-init_1.1.2_amd64
 RUN chmod +x /usr/local/bin/dumb-init
