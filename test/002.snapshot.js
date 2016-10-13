@@ -6,6 +6,7 @@ var request = require('superagent');
 var async = require('async');
 var _ = require('lodash');
 
+var db = require('./fixtures/db');
 var mock = require('./fixtures/mock');
 
 describe('/snapshots', function () {
@@ -14,12 +15,14 @@ describe('/snapshots', function () {
       async.apply(app.start),
       async.apply(mock.start)
     ], callback);
+    db.start();
   });
   after(function (callback) {
     async.parallel([
       async.apply(app.stop),
       async.apply(mock.stop)
     ], callback);
+    db.stop();
   });
 
   describe('POST /api/snapshots', function () {

@@ -40,6 +40,9 @@
       "afterEach",
       "describe",
       "it"
-    ]
+    ],
+    "ignore": [
+    "test/fixtures/db_test_data.js"
+  ]
   }
 }
