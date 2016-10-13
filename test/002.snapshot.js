@@ -164,6 +164,56 @@ describe('/snapshots', function () {
           return done();
         });
     });
+
+    it('it should return snapshots from proper host when given host as param', function (done) {
+      request
+        .get('localhost:' + app.port + '/api/snapshots?host=google.com')
+        .end(function (err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          should.exist(res.body);
+          var body = res.body;
+          body.should.be.an.Array();
+          body.length.should.be.greaterThan(0);
+          body.length.should.be.belowOrEqual(10);
+          _.each(body, function eachSnapshot (snapshot) {
+            should.exist(snapshot.id);
+            should.exist(snapshot.status);
+            should.exist(snapshot.createdAt);
+            should.exist(snapshot.updatedAt);
+            should.equal(snapshot.host, 'google.com');
+            should.exist(snapshot.path);
+            should.exist(snapshot.requestedUrl);
+          });
+
+          return done();
+        });
+    });
+
+    it('it should return snapshots from proper url when given an url as param', function (done) {
+      request
+        .get('localhost:' + app.port + '/api/snapshots?url=http://google.com')
+        .end(function (err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          should.exist(res.body);
+          var body = res.body;
+          body.should.be.an.Array();
+          body.length.should.be.greaterThan(0);
+          body.length.should.be.belowOrEqual(10);
+          _.each(body, function eachSnapshot (snapshot) {
+            should.exist(snapshot.id);
+            should.exist(snapshot.status);
+            should.exist(snapshot.createdAt);
+            should.exist(snapshot.updatedAt);
+            should.equal(snapshot.host, 'google.com');
+            should.exist(snapshot.path);
+            should.equal(snapshot.requestedUrl, 'http://google.com');
+          });
+
+          return done();
+        });
+    });
   });
   // PENDING vs IN_PROGRESS vs FAILED vs SUCCESSFUL
   describe('GET /api/snapshots/:snapshotId', function () {
