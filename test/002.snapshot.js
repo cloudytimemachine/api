@@ -11,18 +11,18 @@ var mock = require('./fixtures/mock');
 
 describe('/snapshots', function () {
   before(function (callback) {
-    async.parallel([
-      async.apply(app.start),
-      async.apply(mock.start)
-    ], callback);
-    db.start();
+    async.auto({
+      app: async.apply(app.start),
+      mock: async.apply(mock.start),
+      db: ['app', async.apply(db.start)]
+    }, callback);
   });
   after(function (callback) {
-    async.parallel([
-      async.apply(app.stop),
-      async.apply(mock.stop)
-    ], callback);
-    db.stop();
+    async.auto({
+      app: async.apply(app.stop),
+      stop: async.apply(mock.stop),
+      db: ['app', async.apply(db.stop)]
+    }, callback);
   });
 
   describe('POST /api/snapshots', function () {
