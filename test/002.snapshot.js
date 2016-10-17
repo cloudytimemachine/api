@@ -170,7 +170,7 @@ describe('/snapshots', function () {
 
     it('it should return snapshots from proper host when given host as param', function (done) {
       request
-        .get('localhost:' + app.port + '/api/snapshots?host=google.com')
+        .get('localhost:' + app.port + '/api/snapshots?host=xkcd.com')
         .end(function (err, res) {
           should.not.exist(err);
           should.exist(res);
@@ -183,8 +183,7 @@ describe('/snapshots', function () {
             should.exist(snapshot.id);
             should.exist(snapshot.status);
             should.exist(snapshot.createdAt);
-            should.exist(snapshot.updatedAt);
-            should.equal(snapshot.host, 'google.com');
+            should.equal(snapshot.host, 'xkcd.com');
             should.exist(snapshot.path);
             should.exist(snapshot.requestedUrl);
           });
@@ -195,7 +194,7 @@ describe('/snapshots', function () {
 
     it('it should return snapshots from proper url when given an url as param', function (done) {
       request
-        .get('localhost:' + app.port + '/api/snapshots?url=http://google.com')
+        .get('localhost:' + app.port + '/api/snapshots?url=http://xkcd.com')
         .end(function (err, res) {
           should.not.exist(err);
           should.exist(res);
@@ -208,10 +207,9 @@ describe('/snapshots', function () {
             should.exist(snapshot.id);
             should.exist(snapshot.status);
             should.exist(snapshot.createdAt);
-            should.exist(snapshot.updatedAt);
-            should.equal(snapshot.host, 'google.com');
+            should.equal(snapshot.host, 'xkcd.com');
             should.exist(snapshot.path);
-            should.equal(snapshot.requestedUrl, 'http://google.com');
+            should.equal(snapshot.requestedUrl, 'http://xkcd.com');
           });
 
           return done();
