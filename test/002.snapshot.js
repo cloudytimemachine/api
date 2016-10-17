@@ -6,20 +6,23 @@ var request = require('superagent');
 var async = require('async');
 var _ = require('lodash');
 
+var db = require('./fixtures/db');
 var mock = require('./fixtures/mock');
 
 describe('/snapshots', function () {
   before(function (callback) {
-    async.parallel([
-      async.apply(app.start),
-      async.apply(mock.start)
-    ], callback);
+    async.auto({
+      app: async.apply(app.start),
+      mock: async.apply(mock.start),
+      db: ['app', async.apply(db.start)]
+    }, callback);
   });
   after(function (callback) {
-    async.parallel([
-      async.apply(app.stop),
-      async.apply(mock.stop)
-    ], callback);
+    async.auto({
+      app: async.apply(app.stop),
+      stop: async.apply(mock.stop),
+      db: ['app', async.apply(db.stop)]
+    }, callback);
   });
 
   describe('POST /api/snapshots', function () {
@@ -159,6 +162,54 @@ describe('/snapshots', function () {
             should.exist(snapshot.host);
             should.exist(snapshot.path);
             should.exist(snapshot.requestedUrl);
+          });
+
+          return done();
+        });
+    });
+
+    it('it should return snapshots from proper host when given host as param', function (done) {
+      request
+        .get('localhost:' + app.port + '/api/snapshots?host=xkcd.com')
+        .end(function (err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          should.exist(res.body);
+          var body = res.body;
+          body.should.be.an.Array();
+          body.length.should.be.greaterThan(0);
+          body.length.should.be.belowOrEqual(10);
+          _.each(body, function eachSnapshot (snapshot) {
+            should.exist(snapshot.id);
+            should.exist(snapshot.status);
+            should.exist(snapshot.createdAt);
+            should.equal(snapshot.host, 'xkcd.com');
+            should.exist(snapshot.path);
+            should.exist(snapshot.requestedUrl);
+          });
+
+          return done();
+        });
+    });
+
+    it('it should return snapshots from proper url when given an url as param', function (done) {
+      request
+        .get('localhost:' + app.port + '/api/snapshots?url=http://xkcd.com')
+        .end(function (err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          should.exist(res.body);
+          var body = res.body;
+          body.should.be.an.Array();
+          body.length.should.be.greaterThan(0);
+          body.length.should.be.belowOrEqual(10);
+          _.each(body, function eachSnapshot (snapshot) {
+            should.exist(snapshot.id);
+            should.exist(snapshot.status);
+            should.exist(snapshot.createdAt);
+            should.equal(snapshot.host, 'xkcd.com');
+            should.exist(snapshot.path);
+            should.equal(snapshot.requestedUrl, 'http://xkcd.com');
           });
 
           return done();
