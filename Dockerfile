@@ -1,10 +1,10 @@
-FROM node:4.6
+FROM mhart/alpine-node:4.6
 
-RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.2/dumb-init_1.1.2_amd64
+ADD https://github.com/Yelp/dumb-init/releases/download/v1.1.2/dumb-init_1.1.2_amd64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 
-RUN groupadd -r nodejs && useradd -m -r -g nodejs nodejs
+RUN adduser -D -u 1000 nodejs
 USER nodejs
 
 RUN mkdir -p /home/nodejs/app
